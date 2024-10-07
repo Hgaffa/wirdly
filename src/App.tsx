@@ -1,12 +1,14 @@
-import Landing from "./pages/Landing";
-// Navigation menu imports
+import { Routes, Route } from 'react-router-dom';
+import Landing from './pages/Landing';
+import Login from './pages/Login';
 
 function App() {
   return (
-    <>
-      <Landing />
-    </>
-  )
+    <Routes>
+      <Route path="/" element={<Landing />} />
+      <Route path="/login" element={<Login />} />
+    </Routes>
+  );
 }
 
-export default App
+export default App;
