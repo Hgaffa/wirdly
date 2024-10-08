@@ -8,21 +8,40 @@ import {
     DrawerClose,
 } from "@/components/ui/drawer";
 import { MdOutlineClose } from "react-icons/md";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-function Navbar() {
+import { signOut, User } from "firebase/auth"; // Import User type
+import { auth } from "@/firebase";
+
+interface NavbarProps {
+    user: User | null;
+}
+
+function Navbar({ user }: NavbarProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const navigate = useNavigate();
+
+    const handleSignOut = () => {
+        signOut(auth)
+            .then(() => {
+                console.log("user signed out");
+                navigate("/");
+            })
+            .catch((error) => {
+                console.error("Error signing out:", error);
+            });
+    };
 
     const handleSignInClick = () => {
         setIsMenuOpen(false);
     };
 
     return (
-        <header className="bg-white py-6 shadow-sm w-full">
+        <header className="py-6 shadow-sm w-full">
             <div className="container mx-auto flex justify-between items-center px-4 md:px-0">
                 <Link to="/">
                     <img
-                        src="src/assets/logo.png"
+                        src="src/assets/logo_no_text.png"
                         alt="Wirdly Logo"
                         className="w-44"
                     />
@@ -33,7 +52,7 @@ function Navbar() {
                         <DrawerTrigger asChild>
                             <button
                                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                className="text-gray-800 focus:outline-none"
+                                className="border-black bg-transparent text-gray-800 focus:outline-none"
                             >
                                 <svg
                                     className="w-6 h-6"
@@ -54,6 +73,8 @@ function Navbar() {
                         <DrawerContent>
                             <div className="flex flex-col space-y-4 p-4">
                                 <NavbarOptions
+                                    user={user}
+                                    onSignOut={handleSignOut}
                                     onSignInClick={handleSignInClick}
                                 />
                             </div>
@@ -68,7 +89,11 @@ function Navbar() {
 
                 {/* Navigation Buttons */}
                 <div className="hidden md:flex items-center space-x-4">
-                    <NavbarOptions onSignInClick={() => setIsMenuOpen(false)} />
+                    <NavbarOptions
+                        user={user}
+                        onSignOut={handleSignOut}
+                        onSignInClick={() => setIsMenuOpen(false)}
+                    />
                 </div>
             </div>
         </header>

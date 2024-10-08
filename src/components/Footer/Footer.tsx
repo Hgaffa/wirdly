@@ -4,7 +4,7 @@ function Footer() {
     }
 
     return (
-        <footer className="py-4 bg-gray-100 text-center text-gray-500 w-full">
+        <footer className="py-4 bg-black text-center text-white w-full">
             &copy; {getCurrentYear()} Wirdly. All rights reserved.
         </footer>
     );

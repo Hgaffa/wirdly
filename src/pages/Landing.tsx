@@ -1,16 +1,21 @@
 import Navbar from "@/components/Navbar/Navbar";
 import HeroSection from "@/components/HeroSection/HeroSection";
 import Footer from "@/components/Footer/Footer";
+import useAuth from '@/auth/AuthContext';
 
 function Landing() {
+    const { user, loading } = useAuth();
+
+    if (loading) {
+        return null;
+    }
+
     return (
-        <div
-            className="min-h-screen flex flex-col justify-center items-center"
-        >
-            <Navbar />
+        <>
+            <Navbar user={user} />
             <HeroSection />
             <Footer />
-        </div>
+        </>
     );
 }
 
