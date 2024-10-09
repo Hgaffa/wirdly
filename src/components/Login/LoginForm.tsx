@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, User } from "firebase/auth";
 import { auth } from "@/firebase"; // Import the auth instance
 import { Button } from "@/components/ui/button";
 import {
@@ -19,7 +19,7 @@ export default function LoginForm() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState<User | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -41,7 +41,7 @@ export default function LoginForm() {
     }
 
     return (
-        <div className="min-h-screen flex-grow flex items-center justify-center w-full px-4 md:px-0">
+        <div className="flex-grow flex items-center justify-center w-full px-4 md:px-0">
             <Card className="w-full max-w-sm">
                 <CardHeader>
                     <CardTitle className="text-2xl">Login</CardTitle>

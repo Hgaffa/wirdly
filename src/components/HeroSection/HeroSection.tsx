@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 function HeroSection() {
     return (
@@ -9,9 +10,11 @@ function HeroSection() {
                     alt="Wirdly Logo"
                     className="w-96 mx-auto" // Increased size and centered
                 />
-                <Button className="w-full text-md px-6 py-3 rounded-full">
-                    Get Started for free
-                </Button>
+                <Link to="/signup">
+                    <Button className="w-full text-md px-6 py-3 rounded-full">
+                        Get Started for free
+                    </Button>
+                </Link>
             </div>
         </main>
     );

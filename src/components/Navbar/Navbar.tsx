@@ -12,12 +12,14 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { signOut, User } from "firebase/auth"; // Import User type
 import { auth } from "@/firebase";
+import { UserData } from "@/models/UserData";
 
 interface NavbarProps {
     user: User | null;
+    userData: UserData | null;
 }
 
-function Navbar({ user }: NavbarProps) {
+function Navbar({ user, userData }: NavbarProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const navigate = useNavigate();
 
@@ -74,6 +76,7 @@ function Navbar({ user }: NavbarProps) {
                             <div className="flex flex-col space-y-4 p-4">
                                 <NavbarOptions
                                     user={user}
+                                    userData={userData}
                                     onSignOut={handleSignOut}
                                     onSignInClick={handleSignInClick}
                                 />
@@ -91,6 +94,7 @@ function Navbar({ user }: NavbarProps) {
                 <div className="hidden md:flex items-center space-x-4">
                     <NavbarOptions
                         user={user}
+                        userData={userData}
                         onSignOut={handleSignOut}
                         onSignInClick={() => setIsMenuOpen(false)}
                     />

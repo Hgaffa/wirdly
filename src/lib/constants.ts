@@ -83,7 +83,6 @@ export const surahs = [
     { number: 82, name: "Al-Infitar", englishName: "The Cleaving" },
     { number: 83, name: "Al-Mutaffifin", englishName: "The Defrauding" },
     { number: 84, name: "Al-Inshiqaq", englishName: "The Sundering" },
-    { number: 84, name: "Al-Inshiqaq", englishName: "The Sundering" },
     { number: 85, name: "Al-Buruj", englishName: "The Mansions of the Stars" },
     { number: 86, name: "At-Tariq", englishName: "The Nightcomer" },
     { number: 87, name: "Al-Ala", englishName: "The Most High" },

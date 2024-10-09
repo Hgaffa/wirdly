@@ -1,9 +1,9 @@
 import useAuth from "@/auth/AuthContext";
 import Footer from "@/components/Footer/Footer";
-import LoginForm from "@/components/Login/LoginForm";
+import SignupForm from "@/components/Signup/SignupForm";
 import Navbar from "@/components/Navbar/Navbar";
 
-export default function Login() {
+export default function Signup() {
     const { user, userData, loading } = useAuth();
 
     if (loading) {
@@ -13,7 +13,7 @@ export default function Login() {
     return (
         <>
             <Navbar user={user} userData={userData}/>
-            <LoginForm />
+            <SignupForm />
             <Footer />
         </>
     );

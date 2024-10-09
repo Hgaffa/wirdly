@@ -2,14 +2,16 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "../ui/button";
 import { User } from "@firebase/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserData } from "@/models/UserData";
 
 interface NavbarOptionsProps {
     user: User | null;
+    userData: UserData | null;
     onSignOut: () => void;
     onSignInClick: () => void;
 }
 
-function NavbarOptions({ user, onSignOut, onSignInClick }: NavbarOptionsProps) {
+function NavbarOptions({ user, userData, onSignOut, onSignInClick }: NavbarOptionsProps) {
     const location = useLocation();
 
     const handleSignInClick = () => {
@@ -51,7 +53,7 @@ function NavbarOptions({ user, onSignOut, onSignInClick }: NavbarOptionsProps) {
                             alt={user.displayName || "User"}
                         />
                         <AvatarFallback>
-                            {getInitials(user.displayName || "User")}
+                            {getInitials(userData?.firstName + " " + userData?.lastName || "User")}
                         </AvatarFallback>
                     </Avatar>
                 </div>
@@ -69,12 +71,14 @@ function NavbarOptions({ user, onSignOut, onSignInClick }: NavbarOptionsProps) {
                     >
                         Pricing
                     </Button>
-                    <Button
-                        variant="outline"
-                        className="text-black border-black bg-transparent rounded-full hover:bg-black hover:text-white text-md"
-                    >
-                        Get Started Free
-                    </Button>
+                    <Link to="/signup">
+                        <Button
+                            variant="outline"
+                            className="text-black border-black bg-transparent rounded-full hover:bg-black hover:text-white text-md"
+                        >
+                            Get Started Free
+                        </Button>
+                    </Link>
                     <Link to="/login">
                         <Button
                             className="rounded-full w-full text-md"

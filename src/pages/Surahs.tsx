@@ -5,8 +5,8 @@ import { surahs } from "@/lib/constants";
 import { Checkbox } from "@/components/ui/checkbox";
 
 function Surahs() {
-    const { user, loading } = useAuth();
-
+    const { user, userData, loading } = useAuth();
+    console.log("UserData: ", userData);
     if (loading) {
         return null;
     }
@@ -17,10 +17,10 @@ function Surahs() {
 
     return (
         <>
-            <Navbar user={user} />
+            <Navbar user={user} userData={userData} />
             <main className="flex-grow flex items-center justify-center w-full px-4 md:px-0">
                 <div className="text-center">
-                    <h1 className="text-2xl font-bold mb-4">Surahs</h1>
+                    <h1 className="text-3xl font-bold m-4">Surahs</h1>
                     <ul className="flex flex-col items-center w-full max-w-md">
                         {surahs.map((surah) => (
                             <li

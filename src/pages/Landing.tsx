@@ -4,7 +4,7 @@ import Footer from "@/components/Footer/Footer";
 import useAuth from '@/auth/AuthContext';
 
 function Landing() {
-    const { user, loading } = useAuth();
+    const { user, userData, loading } = useAuth();
 
     if (loading) {
         return null;
@@ -12,7 +12,7 @@ function Landing() {
 
     return (
         <>
-            <Navbar user={user} />
+            <Navbar user={user} userData={userData} />
             <HeroSection />
             <Footer />
         </>
