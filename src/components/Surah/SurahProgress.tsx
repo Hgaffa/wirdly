@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { SurahProgress as SurahProgressModel } from "@/models/SurahProgress";
+import { ChapterProgress as SurahProgressModel } from "@/models/Chapter";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,20 +30,20 @@ export default function SurahProgress({
     };
 
     const handleSave = () => {
-        onUpdateProgress(surahProgress.surah.surahNumber, completedAyahs);
+        onUpdateProgress(surahProgress.surah.id, completedAyahs);
         setIsDialogOpen(false);
     };
 
     return (
         <div className="m-4 border rounded-lg shadow p-4 w-full flex flex-col md:flex-row md:items-center md:justify-between">
             <div className="bg-black text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
-                {surahProgress.surah.surahNumber}
+                {surahProgress.surah.id}
             </div>
             <div className="mr-4 mb-4 md:mb-0 md:w-1/3">
                 <h2 className="text-xl font-bold">
-                    {surahProgress.surah.name}
+                    {surahProgress.surah.name_simple}
                 </h2>
-                <h2 className="text-xl">({surahProgress.surah.englishName})</h2>
+                <h2 className="text-xl">({surahProgress.surah.translated_name.name})</h2>
             </div>
             <div className="mb-4 md:mb-0 md:w-1/3">
                 <Progress
