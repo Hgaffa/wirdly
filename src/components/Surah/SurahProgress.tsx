@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChapterProgress as SurahProgressModel } from "@/models/Chapter";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
@@ -20,18 +20,34 @@ export default function SurahProgress({
     surahProgress,
     onUpdateProgress,
 }: SurahProgressProps) {
-    const [completedAyahs, setCompletedAyahs] = useState(
+    const [completedAyahs, setCompletedAyahs] = useState<number>(
+        surahProgress.completedAyahs
+    );
+    const [tempCompletedAyahs, setTempCompletedAyahs] = useState<number>(
         surahProgress.completedAyahs
     );
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+    useEffect(() => {
+        setCompletedAyahs(surahProgress.completedAyahs);
+        setTempCompletedAyahs(surahProgress.completedAyahs);
+    }, [surahProgress]);
+
     const handleSliderChange = (value: number) => {
-        setCompletedAyahs(value);
+        setTempCompletedAyahs(value);
     };
 
     const handleSave = () => {
-        onUpdateProgress(surahProgress.surah.id, completedAyahs);
+        setCompletedAyahs(tempCompletedAyahs);
+        onUpdateProgress(surahProgress.surah.id, tempCompletedAyahs);
         setIsDialogOpen(false);
+    };
+
+    const handleDialogOpenChange = (isOpen: boolean) => {
+        setIsDialogOpen(isOpen);
+        if (!isOpen) {
+            setTempCompletedAyahs(surahProgress.completedAyahs);
+        }
     };
 
     return (
@@ -43,7 +59,9 @@ export default function SurahProgress({
                 <h2 className="text-xl font-bold">
                     {surahProgress.surah.name_simple}
                 </h2>
-                <h2 className="text-xl">({surahProgress.surah.translated_name.name})</h2>
+                <h2 className="text-xl">
+                    ({surahProgress.surah.translated_name.name})
+                </h2>
             </div>
             <div className="mb-4 md:mb-0 md:w-1/3">
                 <Progress
@@ -52,9 +70,14 @@ export default function SurahProgress({
                 />
             </div>
             <div className="text-center md:w-1/3">
-                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <Dialog
+                    open={isDialogOpen}
+                    onOpenChange={handleDialogOpenChange}
+                >
                     <DialogTrigger asChild>
-                        <Button className="w-full md:w-auto">Update Progress</Button>
+                        <Button className="w-full md:w-auto">
+                            Update Progress
+                        </Button>
                     </DialogTrigger>
                     <DialogContent>
                         <DialogTitle>Update Progress</DialogTitle>
@@ -63,7 +86,7 @@ export default function SurahProgress({
                             have memorized.
                         </DialogDescription>
                         <Slider
-                            value={[completedAyahs]}
+                            value={[tempCompletedAyahs]}
                             min={0}
                             max={surahProgress.totalAyahs}
                             onValueChange={(value) =>
@@ -71,10 +94,19 @@ export default function SurahProgress({
                             }
                         />
                         <p className="text-center mt-2">
-                            {completedAyahs}/{surahProgress.totalAyahs} Ayahs
-                            memorized
+                            {tempCompletedAyahs}/{surahProgress.totalAyahs}{" "}
+                            Ayahs memorized
                         </p>
-                        <Button onClick={handleSave} className="mt-4">
+                        <Button
+                            variant="outline"
+                            className="w-full md:w-auto mt-2"
+                            onClick={() => {
+                                handleSliderChange(surahProgress.totalAyahs);
+                            }}
+                        >
+                            Quick Complete
+                        </Button>
+                        <Button onClick={handleSave}>
                             Save
                         </Button>
                     </DialogContent>

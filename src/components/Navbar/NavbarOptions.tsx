@@ -11,7 +11,12 @@ interface NavbarOptionsProps {
     onSignInClick: () => void;
 }
 
-function NavbarOptions({ user, userData, onSignOut, onSignInClick }: NavbarOptionsProps) {
+function NavbarOptions({
+    user,
+    userData,
+    onSignOut,
+    onSignInClick,
+}: NavbarOptionsProps) {
     const location = useLocation();
 
     const handleSignInClick = () => {
@@ -31,7 +36,15 @@ function NavbarOptions({ user, userData, onSignOut, onSignInClick }: NavbarOptio
     return (
         <>
             {user ? (
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                    <Link to="/questions">
+                        <Button
+                            variant="ghost"
+                            className="bg-transparent text-black rounded-full hover:bg-black hover:text-white text-md"
+                        >
+                            Questions
+                        </Button>
+                    </Link>
                     <Link to="/surahs">
                         <Button
                             variant="ghost"
@@ -53,7 +66,11 @@ function NavbarOptions({ user, userData, onSignOut, onSignInClick }: NavbarOptio
                             alt={user.displayName || "User"}
                         />
                         <AvatarFallback>
-                            {getInitials(userData?.firstName + " " + userData?.lastName || "User")}
+                            {getInitials(
+                                userData?.firstName +
+                                    " " +
+                                    userData?.lastName || "User"
+                            )}
                         </AvatarFallback>
                     </Avatar>
                 </div>

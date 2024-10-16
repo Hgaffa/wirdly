@@ -1,17 +1,29 @@
 import { db } from "@/firebase";
-import { doc, getDoc, setDoc, updateDoc, deleteDoc } from "firebase/firestore";
+import {
+    doc,
+    getDoc,
+    setDoc,
+    deleteDoc,
+    updateDoc,
+} from "firebase/firestore";
 import { User } from "@firebase/auth";
 import { UserData } from "@/models/UserData";
+import { getChapters } from "./quranAPI";
 
 // Function to set user data on sign up
 export async function setUserCollectionData(userData: UserData) {
     try {
-        const user = userData.user
+        const chapters = await getChapters();
+        const user = userData.user;
+
+        // Initialize surahProgress array with zeros
+        const surahProgress = new Array(chapters.chapters.length).fill(0);
+
         await setDoc(doc(db, "users", user.uid), {
             email: user.email,
             firstName: userData.firstName,
             lastName: userData.lastName,
-            surahs: userData.surahs,
+            surahProgress: surahProgress,
         });
     } catch (error) {
         console.error("Error setting user data:", error);
@@ -37,12 +49,14 @@ export async function getUserData(user: User) {
 // Function to update user data
 export async function updateUserData(userData: UserData) {
     try {
+        console.log("Updating user data:", userData);
         await updateDoc(doc(db, "users", userData.user.uid), {
             email: userData.email,
             firstName: userData.firstName,
             lastName: userData.lastName,
-            surahs: userData.surahs,
+            surahProgress: userData.surahProgress,
         });
+        console.log('Updated');
     } catch (error) {
         console.error("Error updating user data:", error);
     }

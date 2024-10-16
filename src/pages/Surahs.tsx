@@ -5,29 +5,70 @@ import { getChapters } from "@/lib/quranAPI";
 import SurahProgress from "@/components/Surah/SurahProgress";
 import { useEffect, useState } from "react";
 import { Chapter } from "@/models/Chapter";
+import { getUserData, updateUserData } from "@/lib/CRUDHelper";
 
 function Surahs() {
     const { user, userData, loading } = useAuth();
     const [chapters, setChapters] = useState<Chapter[]>([]);
+    const [surahProgress, setSurahProgress] = useState<number[]>([]);
 
     useEffect(() => {
-        const fetchChapters = async () => {
-            try {
-                const data = await getChapters();
-                console.log(data.chapters);
-                setChapters(data.chapters);
-            } catch (error) {
-                console.error("Error fetching chapters:", error);
+        const fetchData = async () => {
+            if (user) {
+                // Fetch surah information from Quran.com API
+                const chaptersResponse = await getChapters();
+                setChapters(chaptersResponse.chapters);
+
+                // Fetch user data from Firebase
+                const userData = await getUserData(user);
+                if (userData) {
+                    setSurahProgress(userData.surahProgress);
+                }
             }
         };
+        fetchData();
+    }, [user]);
 
-        fetchChapters();
-    }, []);
+    const handleUpdateProgress = async (surahId: number, completedAyahs: number) => {
 
-    const handleUpdateProgress = (surahId: number, completedAyahs: number) => {
-        // Update the progress in your state or backend
-        console.log(`Surah ID: ${surahId}, Completed Ayahs: ${completedAyahs}`);
-        // Add your backend call here
+        // Update surahProgress state
+        const newProgress = [...surahProgress];
+        newProgress[surahId - 1] = completedAyahs; // surahId is 1-based
+        setSurahProgress(newProgress);
+
+        console.log("New Progress:", newProgress);
+
+        // Update surahProgress for user in Firebase
+        if (user && userData) {
+            const updatedUserData = {
+                user: user,
+                email: userData.email,
+                firstName: userData.firstName,
+                lastName: userData.lastName,
+                surahProgress: newProgress,
+            };
+            await updateUserData(updatedUserData);
+        }
+
+        console.log("Updated progress for surah", surahId, "to", completedAyahs);
+    };
+
+    const numSurahsCompleted = () => {
+        let numSurahsCompleted = 0;
+        for (let i = 0; i < surahProgress.length; i++) {
+            if (surahProgress[i] === chapters[i].verses_count) {
+                numSurahsCompleted++;
+            }
+        }
+        return numSurahsCompleted;
+    };
+
+    const numAyahsCompleted = () => {
+        let numAyahsCompleted = 0;
+        for (let i = 0; i < surahProgress.length; i++) {
+            numAyahsCompleted += surahProgress[i];
+        }
+        return numAyahsCompleted;
     };
 
     if (loading) {
@@ -44,6 +85,8 @@ function Surahs() {
             <main className="flex-grow flex items-center justify-center w-full px-4 md:px-0">
                 <div className="text-center w-full max-w-4xl">
                     <h1 className="text-3xl font-bold m-4">Surahs</h1>
+                    <p>{numSurahsCompleted() + "/114 Surahs Completed (" + parseFloat((numSurahsCompleted()*100/114).toFixed(2)) + "%)"}</p>
+                    <p>{numAyahsCompleted() + "/6236 Ayahs Completed (" + parseFloat((numAyahsCompleted()*100/6236).toFixed(2)) + "%)"}</p>
                     <ul className="flex flex-col items-center w-full">
                         {chapters.map((chapter) => (
                             <li
@@ -53,8 +96,9 @@ function Surahs() {
                                 <SurahProgress
                                     surahProgress={{
                                         surah: chapter,
-                                        completedAyahs: 0, // Replace with actual data
-                                        totalAyahs: chapter.verses_count, // Replace with actual data
+                                        completedAyahs:
+                                            surahProgress[chapter.id - 1],
+                                        totalAyahs: chapter.verses_count,
                                     }}
                                     onUpdateProgress={handleUpdateProgress}
                                 />
