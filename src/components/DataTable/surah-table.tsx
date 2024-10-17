@@ -113,6 +113,7 @@ export function SurahTable({
         React.useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = React.useState({});
     const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+    const [hasSelection, setHasSelection] = React.useState(false);
 
     const table = useReactTable({
         data,
@@ -141,6 +142,7 @@ export function SurahTable({
             onSaveSelection(selectedRows);
         }
         setIsDialogOpen(false);
+        setHasSelection(true);
     };
 
     return (
@@ -149,10 +151,12 @@ export function SurahTable({
                 <DialogTrigger asChild>
                     <Button
                         disabled={questionSource == "hifz"}
-                        variant="outline"
+                        variant={hasSelection ? "destructive" : "outline"}
                         onClick={() => setIsDialogOpen(true)}
                     >
-                        {questionSource == "juz"
+                        {hasSelection
+                            ? "Change Selection"
+                            : questionSource == "juz"
                             ? "Select Juz"
                             : "Select Surah"}
                     </Button>

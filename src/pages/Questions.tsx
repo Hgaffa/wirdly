@@ -27,13 +27,16 @@ import Footer from "@/components/Footer/Footer";
 import { SurahTable } from "@/components/DataTable/surah-table";
 
 // Import tajweed styles
-import "../styles/tajweed.css"
+import "../styles/tajweed.css";
 import { Tajweed } from "tajweed-ts";
 
 // Utility function imports
 import { getUserData } from "@/lib/CRUDHelper";
 import { generateSurahQuestion, getChapters } from "@/lib/quranAPI";
 import useAuth from "@/auth/AuthContext";
+
+// Animations
+import ReactCardFlip from "react-card-flip";
 
 // Models
 import { Chapter } from "@/models/Chapter";
@@ -53,6 +56,8 @@ function Questions() {
     const [questionSource, setQuestionSource] = useState<string>("juz");
 
     const [questionText, setQuestionText] = useState<string>("");
+    const [answerText, setAnswerText] = useState<string>("");
+    const [isFlipped, setIsFlipped] = useState<boolean>(false);
 
     // State to store selected surahs/juzs
     const [selectedSurahs, setSelectedSurahs] = useState<Chapter[]>([]);
@@ -90,6 +95,17 @@ function Questions() {
         return null;
     }
 
+    // Returns question title label
+    const getQuestionLabel = () => {
+        if (questionType === 1) {
+            return "What is the previous verse?";
+        } else if (questionType === 2) {
+            return "What is the next verse?";
+        } else {
+            return "What surah is this verse from?";
+        }
+    };
+
     // Handler when surahs/juz are selected in data table modals
     const handleSaveSelection = (selectedRows: Chapter[]) => {
         setSelectedSurahs(selectedRows);
@@ -97,15 +113,18 @@ function Questions() {
 
     // Handler for generating question
     const handleGenerateQuestion = async () => {
-        console.log("Source: ", questionSource);
-        console.log("Selected Surahs/Juzs: ", selectedSurahs);
-        console.log("Question Type: ", questionType);
-
-        const answer = await generateSurahQuestion(selectedSurahs, questionType, chapters)
+        const response = await generateSurahQuestion(
+            selectedSurahs,
+            questionType,
+            chapters
+        );
         const parseTajweed = new Tajweed();
-        const parsedText = parseTajweed.parse(answer, true);
-        console.log("Answer: ", parsedText);
-        setQuestionText(parsedText);
+
+        const parsedQuestion = parseTajweed.parse(response.question, true);
+        const parsedAnswer = parseTajweed.parse(response.answer, true);
+
+        setQuestionText(parsedQuestion);
+        setAnswerText(parsedAnswer);
     };
 
     return (
@@ -115,8 +134,8 @@ function Questions() {
                 <h1 className="text-3xl font-bold m-4">Questions</h1>
 
                 {/* Question options card */}
-                <div className="w-full md:w-[auto]">
-                    <Card className="w-[500px]">
+                <div className="w-full md:w-[550px]">
+                    <Card className="w-full">
                         <CardHeader>
                             <CardTitle>Question Settings</CardTitle>
                             <CardDescription>
@@ -219,10 +238,79 @@ function Questions() {
                             </Button>
                         </CardFooter>
                     </Card>
-                    <div
-                        className="mt-4 w-full md:w-[500px] text-2xl quranic-text"
-                        dangerouslySetInnerHTML={{ __html: questionText }}
-                    />
+
+                    {/* Questions & Answer Card */}
+                    <div className="question-card mt-4">
+                        {questionText && (
+                            <>
+                                <ReactCardFlip
+                                    isFlipped={isFlipped}
+                                    flipDirection="vertical"
+                                >
+                                    <Card className="w-full">
+                                        <CardHeader>
+                                            <CardTitle>
+                                                {getQuestionLabel()}
+                                            </CardTitle>
+                                            <CardDescription>
+                                                Flip the card to reveal the
+                                                answer.
+                                            </CardDescription>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <form>
+                                                <div
+                                                    className="w-full md:w-[500px] text-3xl quranic-text leading-relaxed"
+                                                    dangerouslySetInnerHTML={{
+                                                        __html: questionText,
+                                                    }}
+                                                ></div>
+                                            </form>
+                                        </CardContent>
+                                        <CardFooter className="flex justify-center w-full">
+                                            <Button
+                                                onClick={() => {
+                                                    setIsFlipped(!isFlipped);
+                                                }}
+                                            >
+                                                Reveal Answer
+                                            </Button>
+                                        </CardFooter>
+                                    </Card>
+
+                                    <Card className="w-full">
+                                        <CardHeader>
+                                            <CardTitle>
+                                                Answer
+                                            </CardTitle>
+                                            <CardDescription>
+                                                Did you get the right answer?
+                                            </CardDescription>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <form>
+                                                <div
+                                                    className="w-full md:w-[500px] text-3xl quranic-text leading-relaxed"
+                                                    dangerouslySetInnerHTML={{
+                                                        __html: answerText,
+                                                    }}
+                                                ></div>
+                                            </form>
+                                        </CardContent>
+                                        <CardFooter className="flex justify-center w-full">
+                                            <Button
+                                                onClick={() => {
+                                                    setIsFlipped(!isFlipped);
+                                                }}
+                                            >
+                                                Back to Question
+                                            </Button>
+                                        </CardFooter>
+                                    </Card>
+                                </ReactCardFlip>
+                            </>
+                        )}
+                    </div>
                 </div>
             </main>
             <Footer />
