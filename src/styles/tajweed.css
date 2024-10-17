@@ -1,0 +1,128 @@
+@font-face {
+    font-family: 'QuranicFont';
+    src: url('@/assets/fonts/quranic-font.woff2') format('woff2'),
+         url('@/assets/fonts/quranic-font.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.quranic-text {
+    font-family: 'QuranicFont', sans-serif;
+    direction: rtl;
+    text-align: right;
+}
+
+tajweed.ghunnah {
+    color: #ff7e1e;
+}
+tajweed.ghunnah:hover {
+    background-color: #ff7e1e;
+    color: black;
+}
+tajweed.qalaqah {
+    color: #dd0008;
+}
+
+tajweed.qalaqah:hover {
+    background-color: #f3a6a9;
+    color: #dd0008;
+    cursor: pointer;
+}
+tajweed.idgham_ghunnah {
+    color: #169200;
+}
+
+tajweed.idgham_ghunnah:hover {
+    background-color: #9ce58e;
+    color: #169200;
+    cursor: pointer;
+}
+tajweed.idgham_wo_ghunnah {
+    color: #169200;
+}
+
+tajweed.idgham_wo_ghunnah:hover {
+    background-color: #9ce58e;
+    color: #169200;
+    cursor: pointer;
+}
+tajweed.iqlab {
+    color: #26bffd;
+}
+
+tajweed.iqlab:hover {
+    background-color: #92e5ff;
+    color: #0099c5;
+    cursor: pointer;
+}
+tajweed.ikhafa {
+    color: #9400a8;
+}
+
+tajweed.ikhafa:hover {
+    background-color: #daa6e1;
+    color: #9400a8;
+    cursor: pointer;
+}
+
+tajweed.ikhafa_shafawi {
+    color: #d500b7;
+}
+
+tajweed.ikhafa_shafawi:hover {
+    background-color: #f0a6e6;
+    color: #d500b7;
+    cursor: pointer;
+}
+tajweed.idgham_shafawi {
+    color: #58b800;
+}
+
+tajweed.idgham_shafawi:hover {
+    background-color: #bae890;
+    color: #58b800;
+    cursor: pointer;
+}
+tajweed.slnt {
+    color: #aaaaaa;
+}
+
+tajweed.ham_wasl {
+    color: #aaaaaa;
+}
+
+tajweed.ham_wasl:hover {
+    background-color: #d7d7d7;
+}
+
+tajweed.madda_necessary {
+    color: #000ebc;
+}
+
+tajweed.madda_obligatory {
+    color: #2144c1;
+}
+
+tajweed.madda_permissible {
+    color: #4050ff;
+}
+
+tajweed.madda_normal {
+    color: #537fff;
+}
+
+.idgh_mus {
+    color: #a1a1a1;
+}
+
+tajweed.laam_shamsiyah {
+    color: #c91b24;
+}
+
+tajweed.idgh_mus:hover {
+    background-color: #d7d7d7;
+}
+
+.quranic-text .end {
+    display: none;
+}

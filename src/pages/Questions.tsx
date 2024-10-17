@@ -4,6 +4,7 @@ import "../styles/styles.css";
 // Shadcn component imports
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Button } from "@/components/ui/button";
 import {
     Select,
     SelectContent,
@@ -19,19 +20,24 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 
 // Custom component imports
 import Navbar from "@/components/Navbar/Navbar";
 import Footer from "@/components/Footer/Footer";
+import { SurahTable } from "@/components/DataTable/surah-table";
+
+// Import tajweed styles
+import "../styles/tajweed.css"
+import { Tajweed } from "tajweed-ts";
 
 // Utility function imports
 import { getUserData } from "@/lib/CRUDHelper";
-import { getChapters } from "@/lib/quranAPI";
+import { generateSurahQuestion, getChapters } from "@/lib/quranAPI";
 import useAuth from "@/auth/AuthContext";
-import { Button } from "@/components/ui/button";
 
 // Models
+import { Chapter } from "@/models/Chapter";
+
 interface Option {
     label: string;
     value: number;
@@ -39,14 +45,17 @@ interface Option {
 
 function Questions() {
     const { user, userData, loading } = useAuth();
-    const [chapters, setChapters] = useState<Option[]>([]);
+    const [chapters, setChapters] = useState<Chapter[]>([]);
     const [juzList, setJuzList] = useState<Option[]>([]);
     const [surahProgress, setSurahProgress] = useState<number[]>([]);
+
+    const [questionType, setQuestionType] = useState<number>(1);
     const [questionSource, setQuestionSource] = useState<string>("juz");
 
-    const [selectedQuestionRange, setselectedQuestionRange] = useState([]);
+    const [questionText, setQuestionText] = useState<string>("");
 
-    const [useMemorisedSurahs, setUseMemorisedSurahs] = useState(false);
+    // State to store selected surahs/juzs
+    const [selectedSurahs, setSelectedSurahs] = useState<Chapter[]>([]);
 
     // Fetch data and initialise states
     useEffect(() => {
@@ -54,13 +63,7 @@ function Questions() {
             if (user) {
                 // Fetch surah information from Quran.com API
                 const chaptersResponse = await getChapters();
-                const chaptersList = chaptersResponse.chapters.map(
-                    (chapter) => ({
-                        label: chapter.name_simple,
-                        value: chapter.id,
-                    })
-                );
-                setChapters(chaptersList);
+                setChapters(chaptersResponse.chapters);
 
                 // Set Juz information
                 const juzArray = Array.from(
@@ -86,6 +89,24 @@ function Questions() {
     if (loading) {
         return null;
     }
+
+    // Handler when surahs/juz are selected in data table modals
+    const handleSaveSelection = (selectedRows: Chapter[]) => {
+        setSelectedSurahs(selectedRows);
+    };
+
+    // Handler for generating question
+    const handleGenerateQuestion = async () => {
+        console.log("Source: ", questionSource);
+        console.log("Selected Surahs/Juzs: ", selectedSurahs);
+        console.log("Question Type: ", questionType);
+
+        const answer = await generateSurahQuestion(selectedSurahs, questionType, chapters)
+        const parseTajweed = new Tajweed();
+        const parsedText = parseTajweed.parse(answer, true);
+        console.log("Answer: ", parsedText);
+        setQuestionText(parsedText);
+    };
 
     return (
         <>
@@ -153,14 +174,13 @@ function Questions() {
                                         <Label className="mb-1" htmlFor="name">
                                             Source Selection
                                         </Label>
-                                        <Button
-                                            disabled={questionSource == "hifz"}
-                                            variant="outline"
-                                        >
-                                            {questionSource == "juz"
-                                                ? "Select Juz"
-                                                : "Select Surah"}
-                                        </Button>
+                                        <SurahTable
+                                            data={chapters}
+                                            onSaveSelection={
+                                                handleSaveSelection
+                                            }
+                                            questionSource={questionSource}
+                                        />
                                     </div>
 
                                     {/* Select component to choose the type of question to generate */}
@@ -169,9 +189,13 @@ function Questions() {
                                         <Label className="mb-1" htmlFor="name">
                                             Type
                                         </Label>
-                                        <Select>
+                                        <Select
+                                            onValueChange={(value) =>
+                                                setQuestionType(Number(value))
+                                            }
+                                        >
                                             <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="No Question Type Selected" />
+                                                <SelectValue placeholder="Select a type" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectItem value="1">
@@ -186,14 +210,19 @@ function Questions() {
                                             </SelectContent>
                                         </Select>
                                     </div>
-
                                 </div>
                             </form>
                         </CardContent>
                         <CardFooter className="flex justify-end">
-                            <Button>Generate</Button>
+                            <Button onClick={handleGenerateQuestion}>
+                                Generate
+                            </Button>
                         </CardFooter>
                     </Card>
+                    <div
+                        className="mt-4 w-full md:w-[500px] text-2xl quranic-text"
+                        dangerouslySetInnerHTML={{ __html: questionText }}
+                    />
                 </div>
             </main>
             <Footer />
