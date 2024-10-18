@@ -228,7 +228,7 @@ export const generateJuzQuestion = async (
         const questionText = await getAyahTextFromVerseKey(randomVerse);
 
         question = questionText[0].text_uthmani_tajweed;
-        answer = randomJuz.name;
+        answer = chapters[randomVerse.chapter - 1].name_simple;
     }
 
     return {

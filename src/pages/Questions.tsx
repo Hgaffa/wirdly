@@ -57,7 +57,6 @@ interface Option {
 function Questions() {
     const { user, userData, loading } = useAuth();
     const [chapters, setChapters] = useState<Chapter[]>([]);
-    const [juzList, setJuzList] = useState<Option[]>([]);
     const [surahProgress, setSurahProgress] = useState<number[]>([]);
 
     const [questionType, setQuestionType] = useState<number>(0);
@@ -79,16 +78,6 @@ function Questions() {
                 // Fetch surah information from Quran.com API
                 const chaptersResponse = await getChapters();
                 setChapters(chaptersResponse.chapters);
-
-                // Set Juz information
-                const juzArray = Array.from(
-                    { length: 30 },
-                    (_, i) => i + 1
-                ).map((juz) => ({
-                    label: `Juz ${juz}`,
-                    value: juz,
-                }));
-                setJuzList(juzArray);
 
                 // Fetch user data from Firebase
                 const userData = await getUserData(user);
