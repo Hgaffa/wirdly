@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Chapter, GetChaptersResponse } from "@/models/Chapter";
 import { VerseKey, VerseTextDTO, QuestionResponse } from "@/models/Verse";
+import { Juz } from "@/models/Juz";
 
 const API_BASE_URL = "https://api.quran.com/api/v4";
 
@@ -110,6 +111,24 @@ export const getRandomVerseFromSurahId = async (
     }
 };
 
+// Fetches random verse based on Juz ID
+export const getRandomVerseFromJuzId = async (
+    chapterId: number
+): Promise<VerseKey> => {
+    try {
+        const response = await apiClient.get(`verses/random`, {
+            params: {
+                juz_number: chapterId,
+            },
+        });
+        const verseKey = response.data.verse.verse_key.split(":");
+        return { chapter: parseInt(verseKey[0]), verse: parseInt(verseKey[1]) };
+    } catch (error) {
+        console.error("Error fetching random verse:", error);
+        throw error;
+    }
+};
+
 // Fetch ayah text based on verse_key
 export const getAyahTextFromVerseKey = async (
     verseKey: VerseKey
@@ -130,40 +149,142 @@ export const getAyahTextFromVerseKey = async (
 // Generates random question based on selected surahs
 export const generateSurahQuestion = async (
     surahList: Chapter[],
-    questionType: number,
-    chapters: Chapter[]
+    chapters: Chapter[],
+    questionType: number
 ): Promise<QuestionResponse> => {
+    let question, answer;
+
     // Get a random surah from the list
     const randomIndex = Math.floor(Math.random() * surahList.length);
     const randomSurah = surahList[randomIndex];
 
+    // Get a random verse from the random surah
     const randomVerse = await getRandomVerseFromSurahId(randomSurah.id);
-    console.log("Random Verse:", randomVerse);
-    if (questionType === 2) {
+
+    if (questionType === 1) {
+        // Guess previous verse question
+        const answerVerse = await getPrevVerseKey(randomVerse, chapters);
+
+        const questionText = await getAyahTextFromVerseKey(randomVerse);
+        const answerText = await getAyahTextFromVerseKey(answerVerse);
+
+        question = questionText[0].text_uthmani_tajweed;
+        answer = answerText[0].text_uthmani_tajweed;
+    } else if (questionType === 2) {
+        // Guess next verse question
         const answerVerse = await getNextVerseKey(randomVerse, chapters);
 
-        const question = await getAyahTextFromVerseKey(randomVerse);
-        const answer = await getAyahTextFromVerseKey(answerVerse);
-        return {
-            question: question[0].text_uthmani_tajweed,
-            answer: answer[0].text_uthmani_tajweed,
-        };
+        const questionText = await getAyahTextFromVerseKey(randomVerse);
+        const answerText = await getAyahTextFromVerseKey(answerVerse);
+
+        question = questionText[0].text_uthmani_tajweed;
+        answer = answerText[0].text_uthmani_tajweed;
+    } else {
+        // Guess surah question
+        const questionText = await getAyahTextFromVerseKey(randomVerse);
+
+        question = questionText[0].text_uthmani_tajweed;
+        answer = randomSurah.name_simple;
     }
-    return { question: "", answer: "" };
+
+    return { question, answer };
 };
 
 // Generates random question based on selected juz
 export const generateJuzQuestion = async (
-    juzList: number[],
+    juzList: Juz[],
+    chapters: Chapter[],
     questionType: number
-) => {
-    // Implement this function
+): Promise<QuestionResponse> => {
+    let question, answer;
+
+    // Get a random Juz from the list
+    const randomIndex = Math.floor(Math.random() * juzList.length);
+    const randomJuz = juzList[randomIndex];
+
+    // Get random verse from the random Juz
+    const randomVerse = await getRandomVerseFromJuzId(randomJuz.id);
+
+    if (questionType === 1) {
+        // Guess previous verse question
+        const answerVerse = await getPrevVerseKey(randomVerse, chapters);
+
+        const questionText = await getAyahTextFromVerseKey(randomVerse);
+        const answerText = await getAyahTextFromVerseKey(answerVerse);
+
+        question = questionText[0].text_uthmani_tajweed;
+        answer = answerText[0].text_uthmani_tajweed;
+    } else if (questionType === 2) {
+        // Guess next verse question
+        const answerVerse = await getNextVerseKey(randomVerse, chapters);
+
+        const questionText = await getAyahTextFromVerseKey(randomVerse);
+        const answerText = await getAyahTextFromVerseKey(answerVerse);
+
+        question = questionText[0].text_uthmani_tajweed;
+        answer = answerText[0].text_uthmani_tajweed;
+    } else {
+        // Guess surah question
+        const questionText = await getAyahTextFromVerseKey(randomVerse);
+
+        question = questionText[0].text_uthmani_tajweed;
+        answer = randomJuz.name;
+    }
+
+    return {
+        question: question,
+        answer: answer,
+    };
 };
 
 // Generates random question based on hifz progress
 export const generateHifzQuestion = async (
-    memorisedList: Chapter[],
+    hifzProgress: number[],
+    chapters: Chapter[],
     questionType: number
 ) => {
-    // Implement this function
+    let question, answer;
+
+    // Get list of chapters where hifz progress is equal to total verses
+    const completedChapters = chapters.filter(
+        (chapter, index) => hifzProgress[index] === chapter.verses_count
+    );
+
+    // Get a random chapter from the list of completed chapters
+    const randomIndex = Math.floor(Math.random() * completedChapters.length);
+    const randomSurah = completedChapters[randomIndex];
+
+    // Get a random verse from the random surah
+    const randomVerse = await getRandomVerseFromSurahId(randomSurah.id);
+
+    if (questionType === 1) {
+      // Guess previous verse question
+      const answerVerse = await getPrevVerseKey(randomVerse, chapters);
+
+      const questionText = await getAyahTextFromVerseKey(randomVerse);
+      const answerText = await getAyahTextFromVerseKey(answerVerse);
+
+      question = questionText[0].text_uthmani_tajweed;
+      answer = answerText[0].text_uthmani_tajweed;
+    } else if (questionType === 2) {
+        // Guess next verse question
+        const answerVerse = await getNextVerseKey(randomVerse, chapters);
+
+        const questionText = await getAyahTextFromVerseKey(randomVerse);
+        const answerText = await getAyahTextFromVerseKey(answerVerse);
+
+        question = questionText[0].text_uthmani_tajweed;
+        answer = answerText[0].text_uthmani_tajweed;
+    } else {
+        // Guess surah question
+        const questionText = await getAyahTextFromVerseKey(randomVerse);
+
+        question = questionText[0].text_uthmani_tajweed;
+        answer = randomSurah.name_simple;
+    }
+
+    return {
+        question: question,
+        answer: answer,
+    };
 };

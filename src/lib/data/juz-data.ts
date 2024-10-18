@@ -1,4 +1,4 @@
-const juzData = [
+export const juzData = [
     { id: 1, name: "Juz 1", alternate_name: "Alif Lam Meem" },
     { id: 2, name: "Juz 2", alternate_name: "Sayaqool" },
     { id: 3, name: "Juz 3", alternate_name: "Tilka 'r-Rusul" },

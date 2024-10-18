@@ -24,7 +24,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Chapter } from "@/models/Chapter";
+import { Juz } from "@/models/Juz";
 import {
     Dialog,
     DialogTrigger,
@@ -35,7 +35,7 @@ import {
 import { DialogHeader, DialogFooter } from "../ui/dialog";
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const columns: ColumnDef<Chapter>[] = [
+export const columns: ColumnDef<Juz>[] = [
     {
         id: "select",
         header: ({ table }) => (
@@ -61,14 +61,7 @@ export const columns: ColumnDef<Chapter>[] = [
         enableHiding: false,
     },
     {
-        accessorKey: "id",
-        header: "#",
-        cell: ({ row }) => (
-            <div className="capitalize">{row.getValue("id")}</div>
-        ),
-    },
-    {
-        accessorKey: "name_simple",
+        accessorKey: "alternate_name",
         header: ({ column }) => {
             return (
                 <Button
@@ -77,37 +70,30 @@ export const columns: ColumnDef<Chapter>[] = [
                         column.toggleSorting(column.getIsSorted() === "asc")
                     }
                 >
-                    Surah
+                    Name
                     <CaretSortIcon className="ml-2 h-4 w-4" />
                 </Button>
             );
         },
         cell: ({ row }) => (
-            <div className="capitalize">{row.getValue("name_simple")}</div>
+            <div className="capitalize">{row.getValue("alternate_name")}</div>
         ),
     },
     {
-        accessorKey: "name_arabic",
-        header: "Arabic",
+        accessorKey: "name",
+        header: "Juz Number",
         cell: ({ row }) => (
-            <div className="capitalize">{row.getValue("name_arabic")}</div>
-        ),
-    },
-    {
-        accessorKey: "verses_count",
-        header: "Verses",
-        cell: ({ row }) => (
-            <div className="capitalize">{row.getValue("verses_count")}</div>
+            <div className="capitalize">{row.getValue("name")}</div>
         ),
     },
 ];
 
-interface SurahTableProps {
-    data: Chapter[];
-    onSaveSelection?: (selectedRows: Chapter[]) => void;
+interface JuzTableProps {
+    data: Juz[];
+    onSaveSelection?: (selectedRows: Juz[]) => void;
 }
 
-export function SurahTable({ data, onSaveSelection }: SurahTableProps) {
+export function JuzTable({ data, onSaveSelection }: JuzTableProps) {
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] =
         React.useState<ColumnFiltersState>([]);
@@ -155,7 +141,7 @@ export function SurahTable({ data, onSaveSelection }: SurahTableProps) {
                         variant={hasSelection ? "destructive" : "outline"}
                         onClick={() => setIsDialogOpen(true)}
                     >
-                        {hasSelection ? "Change Selection" : "Select Surah"}
+                        {hasSelection ? "Change Selection" : "Select Juz"}
                     </Button>
                 </DialogTrigger>
                 <DialogContent className="w-full md:max-w-[900px]">
@@ -169,15 +155,15 @@ export function SurahTable({ data, onSaveSelection }: SurahTableProps) {
                     <div className="w-full">
                         <div className="flex items-center py-4">
                             <Input
-                                placeholder="Filter Surahs..."
+                                placeholder="Filter Juz..."
                                 value={
                                     (table
-                                        .getColumn("name_simple")
+                                        .getColumn("name")
                                         ?.getFilterValue() as string) ?? ""
                                 }
                                 onChange={(event) =>
                                     table
-                                        .getColumn("name_simple")
+                                        .getColumn("name")
                                         ?.setFilterValue(event.target.value)
                                 }
                                 className="max-w-sm"

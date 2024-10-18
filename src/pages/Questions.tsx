@@ -32,7 +32,12 @@ import { Tajweed } from "tajweed-ts";
 
 // Utility function imports
 import { getUserData } from "@/lib/CRUDHelper";
-import { generateSurahQuestion, getChapters } from "@/lib/quranAPI";
+import {
+    generateHifzQuestion,
+    generateJuzQuestion,
+    generateSurahQuestion,
+    getChapters,
+} from "@/lib/quranAPI";
 import useAuth from "@/auth/AuthContext";
 
 // Animations
@@ -40,6 +45,9 @@ import ReactCardFlip from "react-card-flip";
 
 // Models
 import { Chapter } from "@/models/Chapter";
+import { Juz } from "@/models/Juz";
+import { JuzTable } from "@/components/DataTable/juz-table";
+import { juzData } from "@/lib/data/juz-data";
 
 interface Option {
     label: string;
@@ -52,15 +60,17 @@ function Questions() {
     const [juzList, setJuzList] = useState<Option[]>([]);
     const [surahProgress, setSurahProgress] = useState<number[]>([]);
 
-    const [questionType, setQuestionType] = useState<number>(1);
+    const [questionType, setQuestionType] = useState<number>(0);
     const [questionSource, setQuestionSource] = useState<string>("juz");
 
     const [questionText, setQuestionText] = useState<string>("");
     const [answerText, setAnswerText] = useState<string>("");
+    const [showQuestion, setShowQuestion] = useState<boolean>(false);
     const [isFlipped, setIsFlipped] = useState<boolean>(false);
 
     // State to store selected surahs/juzs
     const [selectedSurahs, setSelectedSurahs] = useState<Chapter[]>([]);
+    const [selectedJuz, setSelectedJuz] = useState<Juz[]>([]);
 
     // Fetch data and initialise states
     useEffect(() => {
@@ -107,24 +117,74 @@ function Questions() {
     };
 
     // Handler when surahs/juz are selected in data table modals
-    const handleSaveSelection = (selectedRows: Chapter[]) => {
+    const handleSaveSurahSelection = (selectedRows: Chapter[]) => {
         setSelectedSurahs(selectedRows);
     };
 
+    const handleSaveJuzSelection = (selectedRows: Juz[]) => {
+        setSelectedJuz(selectedRows);
+    };
+
+
+    // Handler for resetting question/answer card when input changed
+    const handleResetCard = () => {
+        setIsFlipped(false);
+        setShowQuestion(false);
+    }
+
     // Handler for generating question
     const handleGenerateQuestion = async () => {
-        const response = await generateSurahQuestion(
-            selectedSurahs,
-            questionType,
-            chapters
-        );
-        const parseTajweed = new Tajweed();
+        let response;
 
-        const parsedQuestion = parseTajweed.parse(response.question, true);
-        const parsedAnswer = parseTajweed.parse(response.answer, true);
+        if (
+            (questionSource === "surah" && selectedSurahs.length === 0) ||
+            (questionSource === "juz" && selectedJuz.length === 0) ||
+            (questionSource === "hifz" &&
+                surahProgress.every((surah) => surah === 0))
+        ) {
+            alert(
+                "Please make a valid source selection or update your hifz tracker."
+            );
+            return;
+        } else if (questionType === 0) {
+            alert("Please select a question type.");
+            return;
+        }
 
-        setQuestionText(parsedQuestion);
-        setAnswerText(parsedAnswer);
+        if (questionSource == "surah") {
+            response = await generateSurahQuestion(
+                selectedSurahs,
+                chapters,
+                questionType
+            );
+        } else if (questionSource == "juz") {
+            response = await generateJuzQuestion(
+                selectedJuz,
+                chapters,
+                questionType
+            );
+        } else {
+            response = await generateHifzQuestion(
+                surahProgress,
+                chapters,
+                questionType
+            );
+        }
+
+        if (response) {
+            const parseTajweed = new Tajweed();
+            const parsedQuestion = parseTajweed.parse(response.question, true);
+
+            let answer = response.answer;
+
+            if (questionType !== 3) {
+                answer = parseTajweed.parse(response.answer, true);
+            }
+
+            setQuestionText(parsedQuestion);
+            setAnswerText(answer);
+            setShowQuestion(true);
+        }
     };
 
     return (
@@ -153,7 +213,10 @@ function Questions() {
                                         </Label>
                                         <RadioGroup
                                             defaultValue="juz"
-                                            onValueChange={setQuestionSource}
+                                            onValueChange={(value) => {
+                                                setQuestionSource(value);
+                                                handleResetCard();
+                                            }}
                                         >
                                             <div className="flex items-center space-x-2">
                                                 <RadioGroupItem
@@ -193,13 +256,25 @@ function Questions() {
                                         <Label className="mb-1" htmlFor="name">
                                             Source Selection
                                         </Label>
-                                        <SurahTable
-                                            data={chapters}
-                                            onSaveSelection={
-                                                handleSaveSelection
-                                            }
-                                            questionSource={questionSource}
-                                        />
+                                        {questionSource == "surah" ? (
+                                            <SurahTable
+                                                data={chapters}
+                                                onSaveSelection={
+                                                    handleSaveSurahSelection
+                                                }
+                                            />
+                                        ) : questionSource == "juz" ? (
+                                            <JuzTable
+                                                data={juzData}
+                                                onSaveSelection={
+                                                    handleSaveJuzSelection
+                                                }
+                                            />
+                                        ) : (
+                                            <Button disabled variant="outline">
+                                                Using Hifz Tracker
+                                            </Button>
+                                        )}
                                     </div>
 
                                     {/* Select component to choose the type of question to generate */}
@@ -209,9 +284,10 @@ function Questions() {
                                             Type
                                         </Label>
                                         <Select
-                                            onValueChange={(value) =>
-                                                setQuestionType(Number(value))
-                                            }
+                                            onValueChange={(value) => {
+                                                setQuestionType(Number(value));
+                                                handleResetCard();
+                                            }}
                                         >
                                             <SelectTrigger className="w-full">
                                                 <SelectValue placeholder="Select a type" />
@@ -240,8 +316,8 @@ function Questions() {
                     </Card>
 
                     {/* Questions & Answer Card */}
-                    <div className="question-card mt-4">
-                        {questionText && (
+                    <div className="question-card mt-4 mb-8">
+                        {showQuestion && (
                             <>
                                 <ReactCardFlip
                                     isFlipped={isFlipped}
@@ -280,21 +356,27 @@ function Questions() {
 
                                     <Card className="w-full">
                                         <CardHeader>
-                                            <CardTitle>
-                                                Answer
-                                            </CardTitle>
+                                            <CardTitle>Answer</CardTitle>
                                             <CardDescription>
                                                 Did you get the right answer?
                                             </CardDescription>
                                         </CardHeader>
                                         <CardContent>
                                             <form>
-                                                <div
-                                                    className="w-full md:w-[500px] text-3xl quranic-text leading-relaxed"
-                                                    dangerouslySetInnerHTML={{
-                                                        __html: answerText,
-                                                    }}
-                                                ></div>
+                                                {questionType === 3 ? (
+                                                    <div className="w-full md:w-[500px] text-3xl flex justify-center items-center h-full">
+                                                        <h3 className="font-bold">
+                                                            {answerText}
+                                                        </h3>
+                                                    </div>
+                                                ) : (
+                                                    <div
+                                                        className="w-full md:w-[500px] text-3xl quranic-text leading-relaxed"
+                                                        dangerouslySetInnerHTML={{
+                                                            __html: answerText,
+                                                        }}
+                                                    ></div>
+                                                )}
                                             </form>
                                         </CardContent>
                                         <CardFooter className="flex justify-center w-full">
