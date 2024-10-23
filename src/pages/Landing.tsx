@@ -13,7 +13,7 @@ function Landing() {
     return (
         <>
             <Navbar user={user} userData={userData} />
-            <HeroSection />
+            <HeroSection user={user} userData={userData} />
             <Footer />
         </>
     );

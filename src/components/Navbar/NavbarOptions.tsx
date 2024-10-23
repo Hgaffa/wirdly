@@ -19,6 +19,10 @@ function NavbarOptions({
 }: NavbarOptionsProps) {
     const location = useLocation();
 
+    const isMobile = (): boolean => {
+        return window.matchMedia("(max-width: 768px)").matches;
+    };
+
     const handleSignInClick = () => {
         if (location.pathname === "/login") {
             onSignInClick();
@@ -36,26 +40,26 @@ function NavbarOptions({
     return (
         <>
             {user ? (
-                <div className="flex items-center space-x-2">
-                    <Link to="/questions">
+                <div className={`flex ${isMobile() ? 'flex-col space-y-2 items-center' : 'items-center space-x-2'}`}>
+                    <Link to="/questions" className="w-full md:w-auto">
                         <Button
-                            variant="ghost"
-                            className="bg-transparent text-black rounded-full hover:bg-black hover:text-white text-md"
+                            variant={isMobile() ? "outline" : "ghost"}
+                            className="w-full md:w-auto bg-transparent border-black text-black rounded-full hover:bg-black hover:text-white text-md"
                         >
                             Questions
                         </Button>
                     </Link>
-                    <Link to="/surahs">
+                    <Link to="/surahs" className="w-full md:w-auto">
                         <Button
-                            variant="ghost"
-                            className="bg-transparent text-black rounded-full hover:bg-black hover:text-white text-md"
+                            variant={isMobile() ? "outline" : "ghost"}
+                            className="w-full md:w-auto bg-transparent border-black text-black rounded-full hover:bg-black hover:text-white text-md"
                         >
                             Surahs
                         </Button>
                     </Link>
                     <Button
-                        variant="outline"
-                        className="text-black border-black bg-transparent rounded-full hover:bg-black hover:text-white text-md"
+                        variant={isMobile() ? "outline" : "ghost"}
+                        className="w-full md:w-auto text-black border-black bg-transparent rounded-full hover:bg-black hover:text-white text-md"
                         onClick={onSignOut}
                     >
                         Sign Out
@@ -75,36 +79,36 @@ function NavbarOptions({
                     </Avatar>
                 </div>
             ) : (
-                <>
+                <div className={`flex ${isMobile() ? 'flex-col space-y-2 items-center' : 'items-center space-x-2'}`}>
                     <Button
-                        variant="ghost"
-                        className="bg-transparent rounded-full hover:bg-black hover:text-white text-md"
+                        variant={isMobile() ? "outline" : "ghost"}
+                        className="w-full md:w-auto bg-transparent rounded-full hover:bg-black hover:text-white text-md"
                     >
                         Features
                     </Button>
                     <Button
-                        variant="ghost"
-                        className="bg-transparent rounded-full hover:bg-black hover:text-white text-md"
+                        variant={isMobile() ? "outline" : "ghost"}
+                        className="w-full md:w-auto bg-transparent rounded-full hover:bg-black hover:text-white text-md"
                     >
                         Pricing
                     </Button>
-                    <Link to="/signup">
+                    <Link to="/signup" className="w-full md:w-auto">
                         <Button
                             variant="outline"
-                            className="text-black border-black bg-transparent rounded-full hover:bg-black hover:text-white text-md"
+                            className="w-full md:w-auto text-black border-black bg-transparent rounded-full hover:bg-black hover:text-white text-md"
                         >
                             Get Started Free
                         </Button>
                     </Link>
-                    <Link to="/login">
+                    <Link to="/login" className="w-full md:w-auto">
                         <Button
-                            className="rounded-full w-full text-md"
+                            className="w-full md:w-auto rounded-full text-md"
                             onClick={handleSignInClick}
                         >
                             Sign In
                         </Button>
                     </Link>
-                </>
+                </div>
             )}
         </>
     );

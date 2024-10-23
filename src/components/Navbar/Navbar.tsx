@@ -13,6 +13,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { signOut, User } from "firebase/auth"; // Import User type
 import { auth } from "@/firebase";
 import { UserData } from "@/models/UserData";
+import { Button } from "../ui/button";
 
 interface NavbarProps {
     user: User | null;
@@ -52,9 +53,10 @@ function Navbar({ user, userData }: NavbarProps) {
                 <div className="md:hidden">
                     <Drawer open={isMenuOpen} onOpenChange={setIsMenuOpen}>
                         <DrawerTrigger asChild>
-                            <button
+                            <Button
+                                variant="ghost"
                                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                className="border-black bg-transparent text-gray-800 focus:outline-none"
+                                className="border-black bg-transparent text-gray-800"
                             >
                                 <svg
                                     className="w-6 h-6"
@@ -70,7 +72,7 @@ function Navbar({ user, userData }: NavbarProps) {
                                         d="M4 6h16M4 12h16m-7 6h7"
                                     ></path>
                                 </svg>
-                            </button>
+                            </Button>
                         </DrawerTrigger>
                         <DrawerContent>
                             <div className="flex flex-col space-y-4 p-4">
