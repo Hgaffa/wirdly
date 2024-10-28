@@ -9,7 +9,7 @@ interface HeroSectionProps {
     userData: UserData | null;
 }
 
-function HeroSection({ user, userData }: HeroSectionProps) {
+function HeroSection({ user }: HeroSectionProps) {
     return (
         <>
             {/* Hero Section */}

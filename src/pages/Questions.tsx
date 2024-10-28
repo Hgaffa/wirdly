@@ -49,11 +49,6 @@ import { Juz } from "@/models/Juz";
 import { JuzTable } from "@/components/DataTable/juz-table";
 import { juzData } from "@/lib/data/juz-data";
 
-interface Option {
-    label: string;
-    value: number;
-}
-
 function Questions() {
     const { user, userData, loading } = useAuth();
     const [chapters, setChapters] = useState<Chapter[]>([]);

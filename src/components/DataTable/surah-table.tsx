@@ -41,11 +41,11 @@ export const columns: ColumnDef<Chapter>[] = [
         header: ({ table }) => (
             <Checkbox
                 checked={
-                    table.getIsAllRowsSelected() ||
+                    table.getIsAllPageRowsSelected() ||
                     (table.getIsSomePageRowsSelected() && "indeterminate")
                 }
                 onCheckedChange={(value) =>
-                    table.toggleAllRowsSelected(!!value)
+                    table.toggleAllPageRowsSelected(!!value)
                 }
                 aria-label="Select all"
             />

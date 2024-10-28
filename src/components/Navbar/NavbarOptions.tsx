@@ -40,19 +40,25 @@ function NavbarOptions({
     return (
         <>
             {user ? (
-                <div className={`flex ${isMobile() ? 'flex-col space-y-2 items-center' : 'items-center space-x-2'}`}>
+                <div
+                    className={`flex ${
+                        isMobile()
+                            ? "flex-col space-y-2 items-center"
+                            : "items-center space-x-2"
+                    }`}
+                >
                     <Link to="/questions" className="w-full md:w-auto">
                         <Button
-                            variant={isMobile() ? "outline" : "ghost"}
-                            className="w-full md:w-auto bg-transparent border-black text-black rounded-full hover:bg-black hover:text-white text-md"
+                            variant={isMobile() ? "ghost" : "ghost"}
+                            className="w-full md:w-auto rounded-full text-black"
                         >
                             Questions
                         </Button>
                     </Link>
                     <Link to="/surahs" className="w-full md:w-auto">
                         <Button
-                            variant={isMobile() ? "outline" : "ghost"}
-                            className="w-full md:w-auto bg-transparent border-black text-black rounded-full hover:bg-black hover:text-white text-md"
+                            variant={isMobile() ? "ghost" : "ghost"}
+                            className="w-full md:w-auto rounded-full text-black"
                         >
                             Surahs
                         </Button>
@@ -79,27 +85,33 @@ function NavbarOptions({
                     </Avatar>
                 </div>
             ) : (
-                <div className={`flex ${isMobile() ? 'flex-col space-y-2 items-center' : 'items-center space-x-2'}`}>
+                <div
+                    className={`flex ${
+                        isMobile()
+                            ? "flex-col space-y-2 items-center"
+                            : "items-center space-x-2"
+                    }`}
+                >
                     <Button
-                        variant={isMobile() ? "outline" : "ghost"}
-                        className="w-full md:w-auto bg-transparent rounded-full hover:bg-black hover:text-white text-md"
+                        variant={isMobile() ? "ghost" : "ghost"}
+                        className="w-full md:w-auto rounded-full"
                     >
                         Features
                     </Button>
                     <Button
-                        variant={isMobile() ? "outline" : "ghost"}
-                        className="w-full md:w-auto bg-transparent rounded-full hover:bg-black hover:text-white text-md"
+                        variant={isMobile() ? "ghost" : "ghost"}
+                        className="w-full md:w-auto rounded-full"
                     >
                         Pricing
                     </Button>
-                    <Link to="/signup" className="w-full md:w-auto">
+                    {/* <Link to="/signup" className="w-full md:w-auto">
                         <Button
                             variant="outline"
                             className="w-full md:w-auto text-black border-black bg-transparent rounded-full hover:bg-black hover:text-white text-md"
                         >
                             Get Started Free
                         </Button>
-                    </Link>
+                    </Link> */}
                     <Link to="/login" className="w-full md:w-auto">
                         <Button
                             className="w-full md:w-auto rounded-full text-md"
