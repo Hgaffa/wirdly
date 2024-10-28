@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Surahs from "./pages/Surahs";
 import Signup from "./pages/Signup";
 import Questions from "./pages/Questions";
+import { Analytics } from '@vercel/analytics/react';
 
 function App() {
     return (
@@ -20,6 +21,7 @@ function App() {
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/surahs" element={<Surahs />} />
                 <Route path="/questions" element={<Questions />} />
+                <Analytics />
             </Routes>
         </div>
     );
