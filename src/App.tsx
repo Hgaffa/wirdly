@@ -8,7 +8,7 @@ import Questions from "./pages/Questions";
 function App() {
     return (
         <div
-            className="min-h-screen flex flex-col justify-center items-center"
+            className="w-screen min-h-screen flex flex-col justify-center items-center"
             style={{
                 background:
                     "white",
