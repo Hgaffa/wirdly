@@ -44,7 +44,7 @@ function Navbar({ user, userData }: NavbarProps) {
             <div className="container mx-auto flex justify-between items-center px-4 md:px-0">
                 <Link to="/">
                     <img
-                        src="../../../public/logo_no_text.png"
+                        src="/public/logo_no_text.png"
                         alt="Wirdly Logo"
                         className="w-44"
                     />
